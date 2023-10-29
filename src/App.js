@@ -1,25 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Quote from "./components/Quotes";
 
-function App() {
+import axios from "axios";
+import { useState, useEffect } from "react";
+
+const App = () => {
+  const [quotes, setQuotes] = useState([]);
+  const [randomQuote, setRandomQuote] = useState({});
+
+  useEffect(() => {
+    const handleFetchQuoteAPI = async () => {
+      const response = await axios.get("https://api.quotable.io/quotes");
+
+      setQuotes(response.data.results);
+
+      const initialQuote = getRandomQuote(response.data.results);
+      setRandomQuote(initialQuote);
+    };
+
+    handleFetchQuoteAPI();
+  }, []);
+
+  const getRandomQuote = (arr) => {
+    const random = Math.floor(Math.random() * arr.length);
+    const randomQuote = arr[random];
+    return randomQuote;
+  };
+
+  const handelRenderRandomQuote = () => {
+    const quote = getRandomQuote(quotes);
+    setRandomQuote(quote);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="App">
+        <Quote
+          randomQuote={randomQuote}
+          handelRenderRandomQuote={handelRenderRandomQuote}
+        />
+      </div>
+    </>
   );
-}
+};
 
 export default App;
